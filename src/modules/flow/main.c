@@ -71,19 +71,16 @@
 //#define CONFIG_USE_PROBES
 #include <bsp/probes.h>
 
-
 /* coprocessor control register (fpu) */
 #ifndef SCB_CPACR
-#define SCB_CPACR (*((uint32_t*) (((0xE000E000UL) + 0x0D00UL) + 0x088)))
+#define SCB_CPACR (*((uint32_t *)(((0xE000E000UL) + 0x0D00UL) + 0x088)))
 #endif
-
-
 
 /* prototypes */
 void delay(unsigned msec);
 void buffer_reset(void);
 
-__ALIGN_BEGIN USB_OTG_CORE_HANDLE  USB_OTG_dev __ALIGN_END;
+__ALIGN_BEGIN USB_OTG_CORE_HANDLE USB_OTG_dev __ALIGN_END;
 
 /* fast image buffers for calculations */
 uint8_t image_buffer_8bit_1[FULL_IMAGE_SIZE] __attribute__((section(".ccm")));
@@ -96,22 +93,22 @@ volatile uint32_t boot_time_ms = 0;
 volatile uint32_t boot_time10_us = 0;
 
 /* timer constants */
-#define NTIMERS         	9
-#define TIMER_CIN       	0
-#define TIMER_LED       	1
-#define TIMER_DELAY     	2
-#define TIMER_SONAR			3
-#define TIMER_SYSTEM_STATE	4
-#define TIMER_RECEIVE		5
-#define TIMER_PARAMS		6
-#define TIMER_IMAGE			7
-#define TIMER_LPOS		8
-#define MS_TIMER_COUNT		100 /* steps in 10 microseconds ticks */
-#define LED_TIMER_COUNT		500 /* steps in milliseconds ticks */
-#define SONAR_TIMER_COUNT 	100	/* steps in milliseconds ticks */
-#define SYSTEM_STATE_COUNT	1000/* steps in milliseconds ticks */
-#define PARAMS_COUNT		100	/* steps in milliseconds ticks */
-#define LPOS_TIMER_COUNT 	100	/* steps in milliseconds ticks */
+#define NTIMERS 9
+#define TIMER_CIN 0
+#define TIMER_LED 1
+#define TIMER_DELAY 2
+#define TIMER_SONAR 3
+#define TIMER_SYSTEM_STATE 4
+#define TIMER_RECEIVE 5
+#define TIMER_PARAMS 6
+#define TIMER_IMAGE 7
+#define TIMER_LPOS 8
+#define MS_TIMER_COUNT 100		/* steps in 10 microseconds ticks */
+#define LED_TIMER_COUNT 500		/* steps in milliseconds ticks */
+#define SONAR_TIMER_COUNT 100   /* steps in milliseconds ticks */
+#define SYSTEM_STATE_COUNT 1000 /* steps in milliseconds ticks */
+#define PARAMS_COUNT 100		/* steps in milliseconds ticks */
+#define LPOS_TIMER_COUNT 100	/* steps in milliseconds ticks */
 
 static volatile unsigned timer[NTIMERS];
 static volatile unsigned timer_ms = MS_TIMER_COUNT;
@@ -124,7 +121,8 @@ bool send_image_now = true;
 bool send_lpos_now = true;
 
 /* local position estimate without orientation, useful for unit testing w/o FMU */
-static struct lpos_t {
+static struct lpos_t
+{
 	float x;
 	float y;
 	float z;
@@ -146,7 +144,6 @@ void timer_update_ms(void)
 	for (unsigned i = 0; i < NTIMERS; i++)
 		if (timer[i] > 0)
 			timer[i]--;
-
 
 	if (timer[TIMER_LED] == 0)
 	{
@@ -209,9 +206,7 @@ void timer_update(void)
 		timer_update_ms();
 		timer_ms = MS_TIMER_COUNT;
 	}
-
 }
-
 
 uint32_t get_boot_time_ms(void)
 {
@@ -220,16 +215,19 @@ uint32_t get_boot_time_ms(void)
 
 uint32_t get_boot_time_us(void)
 {
-	return boot_time10_us*10;// *10 to return microseconds
+	return boot_time10_us * 10; // *10 to return microseconds
 }
 
 void delay(unsigned msec)
 {
 	timer[TIMER_DELAY] = msec;
-	while (timer[TIMER_DELAY] > 0) {};
+	while (timer[TIMER_DELAY] > 0)
+	{
+	};
 }
 
-void buffer_reset(void) {
+void buffer_reset(void)
+{
 	buffer_reset_needed = 1;
 }
 
@@ -251,32 +249,33 @@ int main(void)
 	LEDOff(LED_ACT);
 	LEDOff(LED_COM);
 	LEDOff(LED_ERR);
-        board_led_rgb(255,255,255, 1);
-        board_led_rgb(  0,  0,255, 0);
-        board_led_rgb(  0,  0, 0, 0);
-        board_led_rgb(255,  0,  0, 1);
-        board_led_rgb(255,  0,  0, 2);
-        board_led_rgb(255,  0,  0, 3);
-                board_led_rgb(  0,255,  0, 3);
-        board_led_rgb(  0,  0,255, 4);
+	board_led_rgb(255, 255, 255, 1);
+	board_led_rgb(0, 0, 255, 0);
+	board_led_rgb(0, 0, 0, 0);
+	board_led_rgb(255, 0, 0, 1);
+	board_led_rgb(255, 0, 0, 2);
+	board_led_rgb(255, 0, 0, 3);
+	board_led_rgb(0, 255, 0, 3);
+	board_led_rgb(0, 0, 255, 4);
 
 	/* enable FPU on Cortex-M4F core */
 	SCB_CPACR |= ((3UL << 10 * 2) | (3UL << 11 * 2)); /* set CP10 Full Access and set CP11 Full Access */
 
 	/* init clock */
-	if (SysTick_Config(SystemCoreClock / 100000))/*set timer to trigger interrupt every 10 microsecond */
+	if (SysTick_Config(SystemCoreClock / 100000)) /*set timer to trigger interrupt every 10 microsecond */
 	{
 		/* capture clock error */
 		LEDOn(LED_ERR);
-		while (1);
+		while (1)
+			;
 	}
 
 	/* init usb */
-	USBD_Init(	&USB_OTG_dev,
-				USB_OTG_FS_CORE_ID,
-				&USR_desc,
-				&USBD_CDC_cb,
-				&USR_cb);
+	USBD_Init(&USB_OTG_dev,
+			  USB_OTG_FS_CORE_ID,
+			  &USR_desc,
+			  &USBD_CDC_cb,
+			  &USR_cb);
 
 	/* init mavlink */
 	communication_init();
@@ -294,18 +293,18 @@ int main(void)
 		image_buffer_8bit_2[i] = 0;
 	}
 
-	uint8_t * current_image = image_buffer_8bit_1;
-	uint8_t * previous_image = image_buffer_8bit_2;
+	uint8_t *current_image = image_buffer_8bit_1;
+	uint8_t *previous_image = image_buffer_8bit_2;
 
 	/* usart config*/
 	usart_init();
 
-    /* i2c config*/
-    i2c_init();
+	/* i2c config*/
+	i2c_init();
 
 	/* sonar config*/
 	float sonar_distance_filtered = 0.0f; // distance in meter
-	float sonar_distance_raw = 0.0f; // distance in meter
+	float sonar_distance_raw = 0.0f;	  // distance in meter
 	bool distance_valid = false;
 	sonar_config();
 
@@ -341,18 +340,18 @@ int main(void)
 	static uint16_t accumulated_quality = 0;
 	static uint32_t integration_timespan = 0;
 	static uint32_t lasttime = 0;
-	uint32_t time_since_last_sonar_update= 0;
-	uint32_t time_last_pub= 0;
+	uint32_t time_since_last_sonar_update = 0;
+	uint32_t time_last_pub = 0;
 
 	uavcan_start();
 	/* main loop */
 	while (1)
 	{
-                PROBE_1(false);
-                uavcan_run();
-                PROBE_1(true);
+		PROBE_1(false);
+		uavcan_run();
+		PROBE_1(true);
 		/* reset flow buffers if needed */
-		if(buffer_reset_needed)
+		if (buffer_reset_needed)
 		{
 			buffer_reset_needed = 0;
 			for (int i = 0; i < global_data.param[PARAM_IMAGE_WIDTH] * global_data.param[PARAM_IMAGE_HEIGHT]; i++)
@@ -365,22 +364,28 @@ int main(void)
 		}
 
 		/* calibration routine */
-		if(FLOAT_AS_BOOL(global_data.param[PARAM_VIDEO_ONLY]))
+		if (FLOAT_AS_BOOL(global_data.param[PARAM_VIDEO_ONLY]))
 		{
-			while(FLOAT_AS_BOOL(global_data.param[PARAM_VIDEO_ONLY]))
+			while (FLOAT_AS_BOOL(global_data.param[PARAM_VIDEO_ONLY]))
 			{
 				dcmi_restart_calibration_routine();
 
 				/* waiting for first quarter of image */
-				while(get_frame_counter() < 2){}
+				while (get_frame_counter() < 2)
+				{
+				}
 				dma_copy_image_buffers(&current_image, &previous_image, FULL_IMAGE_SIZE, 1);
 
 				/* waiting for second quarter of image */
-				while(get_frame_counter() < 3){}
+				while (get_frame_counter() < 3)
+				{
+				}
 				dma_copy_image_buffers(&current_image, &previous_image, FULL_IMAGE_SIZE, 1);
 
 				/* waiting for all image parts */
-				while(get_frame_counter() < 4){}
+				while (get_frame_counter() < 4)
+				{
+				}
 
 				send_calibration_image(&previous_image, &current_image);
 
@@ -403,11 +408,11 @@ int main(void)
 		/* new gyroscope data */
 		float x_rate_sensor, y_rate_sensor, z_rate_sensor;
 		int16_t gyro_temp;
-		gyro_read(&x_rate_sensor, &y_rate_sensor, &z_rate_sensor,&gyro_temp);
+		gyro_read(&x_rate_sensor, &y_rate_sensor, &z_rate_sensor, &gyro_temp);
 
 		/* gyroscope coordinate transformation */
 		float x_rate = y_rate_sensor; // change x and y rates
-		float y_rate = - x_rate_sensor;
+		float y_rate = -x_rate_sensor;
 		float z_rate = z_rate_sensor; // z is correct
 
 		/* calculate focal_length in pixel */
@@ -417,7 +422,8 @@ int main(void)
 		distance_valid = sonar_read(&sonar_distance_filtered, &sonar_distance_raw);
 
 		/* reset to zero for invalid distances */
-		if (!distance_valid) {
+		if (!distance_valid)
+		{
 			sonar_distance_filtered = 0.0f;
 			sonar_distance_raw = 0.0f;
 		}
@@ -429,7 +435,8 @@ int main(void)
 			dma_copy_image_buffers(&current_image, &previous_image, image_size, 1);
 
 			/* compute optical flow */
-			qual = compute_flow(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y);
+			//qual = compute_flow(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y);
+			qual = compute_klt(previous_image, current_image, x_rate, y_rate, z_rate, &pixel_flow_x, &pixel_flow_y);
 
 			/*
 			 * real point P (X,Y,Z), image plane projection p (x,y,z), focal-length f, distance-to-scene Z
@@ -445,24 +452,23 @@ int main(void)
 
 				uint32_t deltatime = (get_boot_time_us() - lasttime);
 				integration_timespan += deltatime;
-				accumulated_flow_x += pixel_flow_y  / focal_length_px * 1.0f; //rad axis swapped to align x flow around y axis
-				accumulated_flow_y += pixel_flow_x  / focal_length_px * -1.0f;//rad
-				accumulated_gyro_x += x_rate * deltatime / 1000000.0f;	//rad
-				accumulated_gyro_y += y_rate * deltatime / 1000000.0f;	//rad
-				accumulated_gyro_z += z_rate * deltatime / 1000000.0f;	//rad
+				accumulated_flow_x += pixel_flow_y / focal_length_px * 1.0f;  //rad axis swapped to align x flow around y axis
+				accumulated_flow_y += pixel_flow_x / focal_length_px * -1.0f; //rad
+				accumulated_gyro_x += x_rate * deltatime / 1000000.0f;		  //rad
+				accumulated_gyro_y += y_rate * deltatime / 1000000.0f;		  //rad
+				accumulated_gyro_z += z_rate * deltatime / 1000000.0f;		  //rad
 				accumulated_framecount++;
 				accumulated_quality += qual;
 			}
-
 
 			/* integrate velocity and output values only if distance is valid */
 			if (distance_valid)
 			{
 				/* calc velocity (negative of flow values scaled with distance) */
-				float new_velocity_x = - flow_compx * sonar_distance_filtered;
-				float new_velocity_y = - flow_compy * sonar_distance_filtered;
+				float new_velocity_x = -flow_compx * sonar_distance_filtered;
+				float new_velocity_y = -flow_compy * sonar_distance_filtered;
 
-				time_since_last_sonar_update = (get_boot_time_us()- get_sonar_measure_time());
+				time_since_last_sonar_update = (get_boot_time_us() - get_sonar_measure_time());
 
 				if (qual > 0)
 				{
@@ -471,9 +477,9 @@ int main(void)
 
 					/* lowpass velocity output */
 					velocity_x_lp = global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW] * new_velocity_x +
-							(1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_x_lp;
+									(1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_x_lp;
 					velocity_y_lp = global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW] * new_velocity_y +
-							(1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_y_lp;
+									(1.0f - global_data.param[PARAM_BOTTOM_FLOW_WEIGHT_NEW]) * velocity_y_lp;
 				}
 				else
 				{
@@ -494,7 +500,6 @@ int main(void)
 			pixel_flow_x_sum += pixel_flow_x;
 			pixel_flow_y_sum += pixel_flow_y;
 			pixel_flow_count++;
-
 		}
 
 		counter++;
@@ -505,8 +510,7 @@ int main(void)
 
 			float ground_distance = 0.0f;
 
-
-			if(FLOAT_AS_BOOL(global_data.param[PARAM_SONAR_FILTERED]))
+			if (FLOAT_AS_BOOL(global_data.param[PARAM_SONAR_FILTERED]))
 			{
 				ground_distance = sonar_distance_filtered;
 			}
@@ -515,50 +519,50 @@ int main(void)
 				ground_distance = sonar_distance_raw;
 			}
 
-                        uavcan_define_export(i2c_data, legacy_12c_data_t, ccm);
-                        uavcan_define_export(range_data, range_data_t, ccm);
+			uavcan_define_export(i2c_data, legacy_12c_data_t, ccm);
+			uavcan_define_export(range_data, range_data_t, ccm);
 			uavcan_timestamp_export(i2c_data);
-                        uavcan_assign(range_data.time_stamp_utc, i2c_data.time_stamp_utc);
+			uavcan_assign(range_data.time_stamp_utc, i2c_data.time_stamp_utc);
 			//update I2C transmitbuffer
-			if(valid_frame_count>0)
+			if (valid_frame_count > 0)
 			{
-				update_TX_buffer(pixel_flow_x, pixel_flow_y, velocity_x_sum/valid_frame_count, velocity_y_sum/valid_frame_count, qual,
-						ground_distance, x_rate, y_rate, z_rate, gyro_temp, uavcan_use_export(i2c_data));
+				update_TX_buffer(pixel_flow_x, pixel_flow_y, velocity_x_sum / valid_frame_count, velocity_y_sum / valid_frame_count, qual,
+								 ground_distance, x_rate, y_rate, z_rate, gyro_temp, uavcan_use_export(i2c_data));
 			}
 			else
 			{
 				update_TX_buffer(pixel_flow_x, pixel_flow_y, 0.0f, 0.0f, qual,
-						ground_distance, x_rate, y_rate, z_rate, gyro_temp, uavcan_use_export(i2c_data));
+								 ground_distance, x_rate, y_rate, z_rate, gyro_temp, uavcan_use_export(i2c_data));
 			}
-	                PROBE_2(false);
-                        uavcan_publish(range, 40, range_data);
-	                PROBE_2(true);
+			PROBE_2(false);
+			uavcan_publish(range, 40, range_data);
+			PROBE_2(true);
 
-                        PROBE_3(false);
-                        uavcan_publish(flow, 40, i2c_data);
-                        PROBE_3(true);
+			PROBE_3(false);
+			uavcan_publish(flow, 40, i2c_data);
+			PROBE_3(true);
 
-            //serial mavlink  + usb mavlink output throttled
+			//serial mavlink  + usb mavlink output throttled
 			uint32_t now = get_boot_time_us();
 			uint32_t time_since_last_pub = now - time_last_pub;
-			if (time_since_last_pub > (1.0e6f/global_data.param[PARAM_BOTTOM_FLOW_PUB_RATE]))
+			if (time_since_last_pub > (1.0e6f / global_data.param[PARAM_BOTTOM_FLOW_PUB_RATE]))
 			{
 				time_last_pub = now;
 
 				float flow_comp_m_x = 0.0f;
 				float flow_comp_m_y = 0.0f;
 
-				if(FLOAT_AS_BOOL(global_data.param[PARAM_BOTTOM_FLOW_LP_FILTERED]))
+				if (FLOAT_AS_BOOL(global_data.param[PARAM_BOTTOM_FLOW_LP_FILTERED]))
 				{
 					flow_comp_m_x = velocity_x_lp;
 					flow_comp_m_y = velocity_y_lp;
 				}
 				else
 				{
-					if(valid_frame_count>0)
+					if (valid_frame_count > 0)
 					{
-						flow_comp_m_x = velocity_x_sum/valid_frame_count;
-						flow_comp_m_y = velocity_y_sum/valid_frame_count;
+						flow_comp_m_x = velocity_x_sum / valid_frame_count;
+						flow_comp_m_y = velocity_y_sum / valid_frame_count;
 					}
 					else
 					{
@@ -567,30 +571,30 @@ int main(void)
 					}
 				}
 
-
 				// send flow
 				mavlink_msg_optical_flow_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-						pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
-						flow_comp_m_x, flow_comp_m_y, qual, ground_distance);
+											  pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
+											  flow_comp_m_x, flow_comp_m_y, qual, ground_distance);
 
 				mavlink_msg_optical_flow_rad_send(MAVLINK_COMM_0, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-						integration_timespan, accumulated_flow_x, accumulated_flow_y,
-						accumulated_gyro_x, accumulated_gyro_y, accumulated_gyro_z,
-						gyro_temp, accumulated_quality/accumulated_framecount,
-						time_since_last_sonar_update,ground_distance);
+												  integration_timespan, accumulated_flow_x, accumulated_flow_y,
+												  accumulated_gyro_x, accumulated_gyro_y, accumulated_gyro_z,
+												  gyro_temp, accumulated_quality / accumulated_framecount,
+												  time_since_last_sonar_update, ground_distance);
 
 				/* send approximate local position estimate without heading */
 				if (FLOAT_AS_BOOL(global_data.param[PARAM_SYSTEM_SEND_LPOS]))
 				{
 					/* rough local position estimate for unit testing */
-					lpos.x += ground_distance*accumulated_flow_x;
-					lpos.y += ground_distance*accumulated_flow_y;
+					lpos.x += ground_distance * accumulated_flow_x;
+					lpos.y += ground_distance * accumulated_flow_y;
 					lpos.z = -ground_distance;
-					lpos.vx = ground_distance*accumulated_flow_x/integration_timespan;
-					lpos.vy = ground_distance*accumulated_flow_y/integration_timespan;
+					lpos.vx = ground_distance * accumulated_flow_x / integration_timespan;
+					lpos.vy = ground_distance * accumulated_flow_y / integration_timespan;
 					lpos.vz = 0; // no direct measurement, just ignore
-
-				} else {
+				}
+				else
+				{
 					/* toggling param allows user reset */
 					lpos.x = 0;
 					lpos.y = 0;
@@ -603,19 +607,17 @@ int main(void)
 				if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_FLOW]))
 				{
 					mavlink_msg_optical_flow_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-							pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
-						flow_comp_m_x, flow_comp_m_y, qual, ground_distance);
-
+												  pixel_flow_x_sum * 10.0f, pixel_flow_y_sum * 10.0f,
+												  flow_comp_m_x, flow_comp_m_y, qual, ground_distance);
 
 					mavlink_msg_optical_flow_rad_send(MAVLINK_COMM_2, get_boot_time_us(), global_data.param[PARAM_SENSOR_ID],
-							integration_timespan, accumulated_flow_x, accumulated_flow_y,
-							accumulated_gyro_x, accumulated_gyro_y, accumulated_gyro_z,
-							gyro_temp, accumulated_quality/accumulated_framecount,
-							time_since_last_sonar_update,ground_distance);
+													  integration_timespan, accumulated_flow_x, accumulated_flow_y,
+													  accumulated_gyro_x, accumulated_gyro_y, accumulated_gyro_z,
+													  gyro_temp, accumulated_quality / accumulated_framecount,
+													  time_since_last_sonar_update, ground_distance);
 				}
 
-
-				if(FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_GYRO]))
+				if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_GYRO]))
 				{
 					mavlink_msg_debug_vect_send(MAVLINK_COMM_2, "GYRO", get_boot_time_us(), x_rate, y_rate, z_rate);
 				}
@@ -683,7 +685,7 @@ int main(void)
 		}
 
 		/*  transmit raw 8-bit image */
-		if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_VIDEO])&& send_image_now)
+		if (FLOAT_AS_BOOL(global_data.param[PARAM_USB_SEND_VIDEO]) && send_image_now)
 		{
 			/* get size of image to send */
 			uint16_t image_size_send;
@@ -695,19 +697,19 @@ int main(void)
 			image_height_send = global_data.param[PARAM_IMAGE_HEIGHT];
 
 			mavlink_msg_data_transmission_handshake_send(
-					MAVLINK_COMM_2,
-					MAVLINK_DATA_STREAM_IMG_RAW8U,
-					image_size_send,
-					image_width_send,
-					image_height_send,
-					image_size_send / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
-					MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
-					100);
+				MAVLINK_COMM_2,
+				MAVLINK_DATA_STREAM_IMG_RAW8U,
+				image_size_send,
+				image_width_send,
+				image_height_send,
+				image_size_send / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1,
+				MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN,
+				100);
 			LEDToggle(LED_COM);
 			uint16_t frame = 0;
 			for (frame = 0; frame < image_size_send / MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN + 1; frame++)
 			{
-				mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame, &((uint8_t *) previous_image)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
+				mavlink_msg_encapsulated_data_send(MAVLINK_COMM_2, frame, &((uint8_t *)previous_image)[frame * MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN]);
 			}
 
 			send_image_now = false;

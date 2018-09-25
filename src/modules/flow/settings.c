@@ -38,12 +38,13 @@
 enum global_param_id_t global_param_id;
 struct global_struct global_data;
 
-extern uint8_t debug_int_message_buffer(const char* string, int32_t num);
+extern uint8_t debug_int_message_buffer(const char *string, int32_t num);
 
 /**
  * @brief reset all parameters to default
  */
-void global_data_reset_param_defaults(void){
+void global_data_reset_param_defaults(void)
+{
 
 	global_data.param[PARAM_SYSTEM_ID] = 81;
 	strcpy(global_data.param_name[PARAM_SYSTEM_ID], "SYS_ID");
@@ -61,7 +62,7 @@ void global_data_reset_param_defaults(void){
 	strcpy(global_data.param_name[PARAM_SYSTEM_TYPE], "SYS_TYPE");
 	global_data.param_access[PARAM_SYSTEM_TYPE] = READ_WRITE;
 
-	global_data.param[PARAM_AUTOPILOT_TYPE] = MAV_AUTOPILOT_GENERIC;
+	global_data.param[PARAM_AUTOPILOT_TYPE] = MAV_AUTOPILOT_PX4;
 	strcpy(global_data.param_name[PARAM_AUTOPILOT_TYPE], "SYS_AP_TYPE");
 	global_data.param_access[PARAM_AUTOPILOT_TYPE] = READ_WRITE;
 
@@ -86,11 +87,11 @@ void global_data_reset_param_defaults(void){
 	global_data.param_access[PARAM_USART2_BAUD] = READ_ONLY;
 
 	global_data.param[PARAM_USART3_BAUD] = 115200;
-//	global_data.param[PARAM_USART3_BAUD] = 921600;
+	//	global_data.param[PARAM_USART3_BAUD] = 921600;
 	strcpy(global_data.param_name[PARAM_USART3_BAUD], "USART_3_BAUD");
 	global_data.param_access[PARAM_USART3_BAUD] = READ_ONLY;
 
-	global_data.param[PARAM_FOCAL_LENGTH_MM] = 16.0f;
+	global_data.param[PARAM_FOCAL_LENGTH_MM] = 2.97f;
 	strcpy(global_data.param_name[PARAM_FOCAL_LENGTH_MM], "LENS_FOCAL_LEN");
 	global_data.param_access[PARAM_FOCAL_LENGTH_MM] = READ_WRITE;
 
@@ -103,7 +104,7 @@ void global_data_reset_param_defaults(void){
 	global_data.param_access[PARAM_IMAGE_HEIGHT] = READ_ONLY;
 
 	global_data.param[PARAM_IMAGE_LOW_LIGHT] = 0;
-//	global_data.param[PARAM_IMAGE_LOW_LIGHT] = 1;
+	//	global_data.param[PARAM_IMAGE_LOW_LIGHT] = 1;
 	strcpy(global_data.param_name[PARAM_IMAGE_LOW_LIGHT], "IMAGE_L_LIGHT");
 	global_data.param_access[PARAM_IMAGE_LOW_LIGHT] = READ_WRITE;
 
@@ -167,22 +168,22 @@ void global_data_reset_param_defaults(void){
 	strcpy(global_data.param_name[PARAM_MAX_FLOW_PIXEL], "BFLOW_MAX_PIX");
 	global_data.param_access[PARAM_MAX_FLOW_PIXEL] = READ_ONLY;
 
-//	global_data.param[PARAM_BOTTOM_FLOW_VALUE_THRESHOLD] = 8 * 8 * 20;
+	//	global_data.param[PARAM_BOTTOM_FLOW_VALUE_THRESHOLD] = 8 * 8 * 20;
 	global_data.param[PARAM_BOTTOM_FLOW_VALUE_THRESHOLD] = 5000; // threshold is irrelevant with this value
 	strcpy(global_data.param_name[PARAM_BOTTOM_FLOW_VALUE_THRESHOLD], "BFLOW_V_THLD");
 	global_data.param_access[PARAM_BOTTOM_FLOW_VALUE_THRESHOLD] = READ_WRITE;
 
-//	global_data.param[PARAM_BOTTOM_FLOW_FEATURE_THRESHOLD] = 100;
-	global_data.param[PARAM_BOTTOM_FLOW_FEATURE_THRESHOLD] = 40;
+	//	global_data.param[PARAM_BOTTOM_FLOW_FEATURE_THRESHOLD] = 100;
+	global_data.param[PARAM_BOTTOM_FLOW_FEATURE_THRESHOLD] = 20;
 	strcpy(global_data.param_name[PARAM_BOTTOM_FLOW_FEATURE_THRESHOLD], "BFLOW_F_THLD");
 	global_data.param_access[PARAM_BOTTOM_FLOW_FEATURE_THRESHOLD] = READ_WRITE;
 
 	global_data.param[PARAM_BOTTOM_FLOW_HIST_FILTER] = 0;
-//	global_data.param[PARAM_BOTTOM_FLOW_HIST_FILTER] = 1;
+	//	global_data.param[PARAM_BOTTOM_FLOW_HIST_FILTER] = 1;
 	strcpy(global_data.param_name[PARAM_BOTTOM_FLOW_HIST_FILTER], "BFLOW_HIST_FIL");
 	global_data.param_access[PARAM_BOTTOM_FLOW_HIST_FILTER] = READ_WRITE;
 
-//	global_data.param[PARAM_BOTTOM_FLOW_GYRO_COMPENSATION] = 0;
+	//	global_data.param[PARAM_BOTTOM_FLOW_GYRO_COMPENSATION] = 0;
 	global_data.param[PARAM_BOTTOM_FLOW_GYRO_COMPENSATION] = 0;
 	strcpy(global_data.param_name[PARAM_BOTTOM_FLOW_GYRO_COMPENSATION], "BFLOW_GYRO_COM");
 	global_data.param_access[PARAM_BOTTOM_FLOW_GYRO_COMPENSATION] = READ_WRITE;
@@ -199,7 +200,7 @@ void global_data_reset_param_defaults(void){
 	strcpy(global_data.param_name[PARAM_BOTTOM_FLOW_PUB_RATE], "BFLOW_RATE");
 	global_data.param_access[PARAM_BOTTOM_FLOW_PUB_RATE] = READ_WRITE;
 
-	global_data.param[PARAM_EXPOSURE_MAX] = 500;
+	global_data.param[PARAM_EXPOSURE_MAX] = 2000;
 	strcpy(global_data.param_name[PARAM_EXPOSURE_MAX], "EXPOSURE_MAX");
 	global_data.param_access[PARAM_EXPOSURE_MAX] = READ_WRITE;
 
@@ -238,7 +239,6 @@ void global_data_reset_param_defaults(void){
 	global_data.param[DEBUG_VARIABLE] = 1;
 	strcpy(global_data.param_name[DEBUG_VARIABLE], "DEBUG");
 	global_data.param_access[DEBUG_VARIABLE] = READ_WRITE;
-
 }
 
 /**
@@ -255,16 +255,16 @@ void global_data_reset(void)
 void set_sensor_position_settings(uint8_t sensor_position)
 {
 
-	switch(sensor_position)
+	switch (sensor_position)
 	{
-		case(BOTTOM):
-			global_data.param[PARAM_IMAGE_WIDTH] = BOTTOM_FLOW_IMAGE_WIDTH;
-			global_data.param[PARAM_IMAGE_HEIGHT] = BOTTOM_FLOW_IMAGE_HEIGHT;
-			break;
+	case (BOTTOM):
+		global_data.param[PARAM_IMAGE_WIDTH] = BOTTOM_FLOW_IMAGE_WIDTH;
+		global_data.param[PARAM_IMAGE_HEIGHT] = BOTTOM_FLOW_IMAGE_HEIGHT;
+		break;
 
-		default:
-			debug_int_message_buffer("Unused sensor position:", sensor_position);
-			return;
+	default:
+		debug_int_message_buffer("Unused sensor position:", sensor_position);
+		return;
 	}
 
 	debug_int_message_buffer("Set sensor position:", sensor_position);
